@@ -11,10 +11,15 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ImageStreamController : NSObject
+@interface ImageStreamController : NSObject {
+    int frameCount;
+    int frameCountLimit;
+}
 
 @property(readonly, nonatomic) bool streamImages;
 @property(nonatomic) FlutterEventSink imageStreamEventSink;
+@property(nonatomic) int fpsLimit;
+@property(nonatomic) NSDate *oldDate;
 
 - (instancetype)initWithEventSink:(FlutterEventSink)imageStreamEventSink;
 - (void)captureOutput:(AVCaptureOutput *)output didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection;
