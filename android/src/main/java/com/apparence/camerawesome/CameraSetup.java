@@ -11,11 +11,12 @@ import android.hardware.camera2.params.StreamConfigurationMap;
 import android.os.Build;
 import android.util.Size;
 import android.view.OrientationEventListener;
-
 import androidx.annotation.RequiresApi;
 
 import com.apparence.camerawesome.models.CameraCharacteristicsModel;
+import com.apparence.camerawesome.models.MultiCamera;
 import com.apparence.camerawesome.sensors.SensorOrientation;
+
 
 import static android.view.OrientationEventListener.ORIENTATION_UNKNOWN;
 
@@ -70,6 +71,7 @@ class CameraSetup {
             sensorOrientation = characteristics.get(CameraCharacteristics.SENSOR_ORIENTATION);
             this.characteristicsModel = new CameraCharacteristicsModel.Builder()
                 .withMaxZoom(characteristics.get(CameraCharacteristics.SCALER_AVAILABLE_MAX_DIGITAL_ZOOM))
+                .withMultiCamera(this.retrieveMultiCamera(cameraId))
                 .withAvailablePreviewZone(characteristics.get(CameraCharacteristics.SENSOR_INFO_ACTIVE_ARRAY_SIZE))
                 .withAutoFocus(characteristics.get(CameraCharacteristics.CONTROL_AF_AVAILABLE_MODES))
                 .withFlash(characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE))
@@ -144,6 +146,34 @@ class CameraSetup {
 
     public int getCurrentOrientation() {
         return currentOrientation;
+    }
+
+    // --------------------------------------------
+    // PRIVATES
+    // --------------------------------------------
+
+    private boolean isDeviceMultiCamera(String deviceId) throws CameraAccessException {
+        CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(deviceId);
+        int[] cap = characteristics.get(CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES);
+        if(cap != null && cap.length > 0) {
+            int i = 0;
+            while (i < cap.length) {
+                if(cap[i] == CameraCharacteristics.REQUEST_AVAILABLE_CAPABILITIES_LOGICAL_MULTI_CAMERA) {
+                    return true;
+                }
+                i++;
+            }
+
+        }
+        return false;
+    }
+
+    private MultiCamera retrieveMultiCamera(String deviceId) throws CameraAccessException {
+        if(Build.VERSION.SDK_INT < Build.VERSION_CODES.P || !this.isDeviceMultiCamera(deviceId)) {
+            return null;
+        }
+        CameraCharacteristics characteristics = mCameraManager.getCameraCharacteristics(deviceId);
+        return new MultiCamera(deviceId, characteristics.getPhysicalCameraIds());
     }
 
 }

@@ -19,14 +19,22 @@ public class CameraCharacteristicsModel {
 
     private Rational aeCompensationRatio;
 
-    public CameraCharacteristicsModel(float maxZoom, Rect availablePreviewZone, boolean hasAutoFocus, boolean hasFlash,
-                                      Range<Integer> aeCompensationRange, Rational aeCompensationRatio) {
+    private MultiCamera multiCamera;
+
+    public CameraCharacteristicsModel(float maxZoom,
+                                      Rect availablePreviewZone,
+                                      boolean hasAutoFocus,
+                                      boolean hasFlash,
+                                      Range<Integer> aeCompensationRange,
+                                      Rational aeCompensationRatio,
+                                      MultiCamera multiCamera) {
         this.maxZoom = maxZoom;
         this.availablePreviewZone = availablePreviewZone;
         this.hasAutoFocus = hasAutoFocus;
         this.flashAvailable = hasFlash;
         this.aeCompensationRange = aeCompensationRange;
         this.aeCompensationRatio = aeCompensationRatio;
+        this.multiCamera = multiCamera;
     }
 
     public float getMaxZoom() {
@@ -58,6 +66,8 @@ public class CameraCharacteristicsModel {
         private Rational aeCompensationRatio;
 
         private Range<Integer> aeCompensationRange;
+
+        private MultiCamera multiCamera;
 
         public Builder() {}
 
@@ -96,9 +106,20 @@ public class CameraCharacteristicsModel {
             return this;
         }
 
+        public Builder withMultiCamera(MultiCamera multiCamera) {
+            this.multiCamera = multiCamera;
+            return this;
+        }
+
         public CameraCharacteristicsModel build() {
             return new CameraCharacteristicsModel(
-              this.maxZoom, this.availablePreviewZone, this.hasAutoFocus, this.flashAvailable, this.aeCompensationRange, this.aeCompensationRatio
+                this.maxZoom,
+                this.availablePreviewZone,
+                this.hasAutoFocus,
+                this.flashAvailable,
+                this.aeCompensationRange,
+                this.aeCompensationRatio,
+                this.multiCamera
             );
         }
     }

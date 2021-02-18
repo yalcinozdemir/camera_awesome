@@ -116,8 +116,10 @@ public class CameraPicture implements CameraSession.OnCaptureSession, CameraSett
             }
         }, null);
         if(autoFocus) {
+            Log.d(TAG, "takePicture: autoFocus on");
             mCameraSession.setState(CameraPictureStates.STATE_REQUEST_FOCUS);
         } else {
+            Log.d(TAG, "takePicture: autoFocus off");
             captureStillPicture();
         }
     }
@@ -170,6 +172,7 @@ public class CameraPicture implements CameraSession.OnCaptureSession, CameraSett
         takePhotoRequestBuilder.set(CaptureRequest.SCALER_CROP_REGION, mCameraSession.getZoomArea());
         takePhotoRequestBuilder.set(CaptureRequest.JPEG_ORIENTATION, orientation);
         mCameraSession.getCaptureSession().stopRepeating();
+//        mCameraSession.getCaptureSession().abortCaptures();
         mCameraSession.getCaptureSession().capture(takePhotoRequestBuilder.build(), mCaptureCallback, null);
     }
 

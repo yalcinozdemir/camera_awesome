@@ -5,6 +5,7 @@ import android.content.Context;
 import android.hardware.camera2.CameraAccessException;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.util.Size;
 
@@ -373,6 +374,7 @@ public class CamerawesomePlugin implements FlutterPlugin, MethodCallHandler, Act
           result.error(reason, "","");
         }
       });
+//      mCameraSetup.getCharacteristicsModel();
       mCameraStateManager.startCamera(mCameraSetup.getCameraId());
     } catch (CameraManagerException e) {
       result.error(e.getMessage(), "Error while starting camera", e.getStackTrace());
@@ -512,20 +514,24 @@ public class CamerawesomePlugin implements FlutterPlugin, MethodCallHandler, Act
     this.pluginActivity = binding.getActivity();
     binding.addRequestPermissionsResultListener(this.cameraPermissions);
     if (this.mCameraPreview != null)
-      this.mCameraPreview.setMainHandler(new Handler(pluginActivity.getMainLooper()));
+      this.mCameraPreview.setMainHandler(new Handler(Looper.getMainLooper()));
   }
 
   @Override
   public void onDetachedFromActivityForConfigChanges() {
     this.pluginActivity = null;
-    this.mCameraPreview.setMainHandler(null);
+    if(this.mCameraPreview != null) {
+      this.mCameraPreview.setMainHandler(null);
+    }
   }
 
   @Override
   public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
     this.pluginActivity = binding.getActivity();
     binding.addRequestPermissionsResultListener(this.cameraPermissions);
-    this.mCameraPreview.setMainHandler(new Handler(pluginActivity.getMainLooper()));
+    if (this.mCameraPreview != null) {
+      this.mCameraPreview.setMainHandler(new Handler(Looper.getMainLooper()));
+    }
   }
 
   @Override
